@@ -27,10 +27,10 @@ services:
       - WORDPRESS_DB_PASSWORD=$MYSQL_PASSWORD
       - WORDPRESS_DB_NAME=wordpress
     volumes:
-      # - type: bind
-      #   source: /var/lib/efs
-      #   target: /var/www/html
-       - wordpress:/var/www/html
+      - type: bind
+        source: /var/lib/efs
+        target: /var/www/html
+      - wordpress:/var/www/html
     networks:
       - app-network
 

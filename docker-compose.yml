@@ -43,7 +43,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - wordpress:/var/www/html
+      - wordpress:/var/lib/efs
       - ./nginx-conf:/etc/nginx/conf.d
       - certbot-etc:/etc/letsencrypt
     networks:

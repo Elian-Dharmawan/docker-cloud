@@ -5,9 +5,9 @@ services:
   wordpress:
     image: wordpress
     container_name: wordpress
-    restart: always
-    ports:
-      - 8080:80
+    restart: unless-stopped
+    # ports:
+    #   - 8080:80
     env_file: .env
     environment:
       - WORDPRESS_DB_HOST=db:3306
@@ -22,7 +22,7 @@ services:
   db:
     image: mysql:8.0
     container_name: db
-    restart: always
+    restart: unless-stopped
     env_file: .env
     environment:
       - MYSQL_DATABASE=wordpress
@@ -30,7 +30,34 @@ services:
       - MYSQL_PASSWORD=$MYSQL_PASSWORD
       - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
     volumes:
-      - db:/var/lib/mysql
+      - dbdata:/var/lib/mysql
+    
+
+  webserver:  
+    image: nginx:1.15.12-alpine
+    container_name: webserver
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - type: bind  
+        source: /var/lib/efs
+        target: /var/www/html
+      - ./nginx-conf:/etc/nginx/conf.d
+      - certbot-etc:/etc/letsencrypt
+    # networks:
+    #   - app-network
+
+  certbot:
+    depends_on:
+      - webserver
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - wordpress:/var/www/html
+    command: certonly --webroot --webroot-path=/var/www/html --email mishael.elian@ti.ukdw.ac.id --agree-tos --no-eff-email -d wordpres-finalcloud-815283555.us-east-1.elb.amazonaws.com
+
 
 volumes:
   wordpress:

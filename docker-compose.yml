@@ -34,30 +34,19 @@ services:
   webserver:
     depends_on:
       - wordpress
-    image: nginx:1.15.12-alpine
-    container_name: webserver
-    restart: unless-stopped
+    image: nginx
+    volumes:
+    - ./templates:/etc/nginx/templates
+    - /var/www/html:/usr/share/nginx/html/:rw
     ports:
-      - "80:80"
-    volumes:
-      - wordpress:/var/www/html
-      - ./nginx-conf:/etc/nginx/conf.d
-      - certbot-etc:/etc/letsencrypt
-    networks:
-      - app-network
+    - "8080:80"
+    environment:
+    - NGINX_HOST=foobar.com
+    - NGINX_PORT=80
 
-  certbot:
-    depends_on:
-      - webserver
-    image: certbot/certbot
-    container_name: certbot
-    volumes:
-      - certbot-etc:/etc/letsencrypt
-      - wordpress:/var/www/html
-    command: certonly --webroot --webroot-path=/var/www/html --email mishael.elian@ti.ukdw.ac.id --agree-tos --no-eff-email -d wordpres-finalcloud-815283555.us-east-1.elb.amazonaws.com
 
 volumes:
-  certbot-etc:
+
   wordpress:
   dbdata:
 

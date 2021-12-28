@@ -1,4 +1,4 @@
-version: '3.1'
+version: '3'
 
 services:
   db:
@@ -8,22 +8,18 @@ services:
     env_file: .env
     environment:
       - MYSQL_DATABASE=wordpress
-      - MYSQL_USER=$MYSQL_USER
-      - MYSQL_PASSWORD=$MYSQL_PASSWORD
-      - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
     volumes:
       - dbdata:/var/lib/mysql
+    command: '--default-authentication-plugin=mysql_native_password'
     networks:
       - app-network
 
   wordpress:
     depends_on:
       - db
-    image: wordpress
+    image: wordpress:5.1.1-fpm-alpine
     container_name: wordpress
     restart: unless-stopped
-    # ports:
-    #   - 8080:80
     env_file: .env
     environment:
       - WORDPRESS_DB_HOST=db:3306
@@ -31,12 +27,9 @@ services:
       - WORDPRESS_DB_PASSWORD=$MYSQL_PASSWORD
       - WORDPRESS_DB_NAME=wordpress
     volumes:
-      - type: bind  
-        source: /var/lib/efs
-        target: /var/www/html
+      - wordpress:/var/www/html
     networks:
       - app-network
-
 
   webserver:
     depends_on:
@@ -47,7 +40,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      -  /var/lib/efs:/var/www/html
+      - wordpress:/var/www/html
       - ./nginx-conf:/etc/nginx/conf.d
       - certbot-etc:/etc/letsencrypt
     networks:
@@ -63,11 +56,11 @@ services:
       - wordpress:/var/www/html
     command: certonly --webroot --webroot-path=/var/www/html --email mishael.elian@ti.ukdw.ac.id --agree-tos --no-eff-email -d wordpres-finalcloud-815283555.us-east-1.elb.amazonaws.com
 
-
 volumes:
+  certbot-etc:
   wordpress:
   dbdata:
-  certbot-etc:
+
 networks:
   app-network:
     driver: bridge

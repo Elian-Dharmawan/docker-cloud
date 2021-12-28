@@ -50,9 +50,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - type: bind  
-        source: /var/lib/efs
-        target: /var/www/html
+      - wordpress:/var/www/html
       - ./nginx-conf:/etc/nginx/conf.d
       - certbot-etc:/etc/letsencrypt
     networks:

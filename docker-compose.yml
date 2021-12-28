@@ -30,7 +30,7 @@ services:
       - type: bind
         source: /var/lib/efs
         target: /var/www/html
-      # - wordpress:/var/www/html
+      # - wordpress:/var/www/html 
     networks:
       - app-network
 
@@ -40,7 +40,7 @@ services:
     image: nginx
     volumes:
     - ./templates:/etc/nginx/templates
-    - /var/www/html:/usr/share/nginx/html/:rw
+    - /var/lib/efs:/usr/share/nginx/html/:rw
     ports:
     - "8080:80"
     environment:

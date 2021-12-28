@@ -13,8 +13,8 @@ services:
       - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
     volumes:
       - dbdata:/var/lib/mysql
-    # networks:
-    #   - app-network
+    networks:
+      - app-network
 
   wordpress:
     depends_on:
@@ -34,11 +34,16 @@ services:
       - type: bind  
         source: /var/lib/efs
         target: /var/www/html
-    # networks:
-    #   - app-network
+      - type: volume
+        source: wordpress
+        target: /var/www/html
+    networks:
+      - app-network
 
 
-  webserver:  
+  webserver:
+    depends_on:
+      - wordpress
     image: nginx:1.15.12-alpine
     container_name: webserver
     restart: unless-stopped
@@ -50,8 +55,8 @@ services:
         target: /var/www/html
       - ./nginx-conf:/etc/nginx/conf.d
       - certbot-etc:/etc/letsencrypt
-    # networks:
-    #   - app-network
+    networks:
+      - app-network
 
   certbot:
     depends_on:
@@ -68,6 +73,6 @@ volumes:
   wordpress:
   dbdata:
   certbot-etc:
-# networks:
-#   app-network:
-#     driver: bridge
+networks:
+  app-network:
+    driver: bridge

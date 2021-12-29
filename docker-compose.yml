@@ -24,7 +24,7 @@ services:
     restart: always
     env_file: .env
     environment:
-      - WORDPRESS_DB_HOST=cloudrds.ctqyuifnwd0z.us-east-1.rds.amazonaws.com:3306
+      - WORDPRESS_DB_HOST=MYSQL_DB
       - WORDPRESS_DB_USER=$MYSQL_USER
       - WORDPRESS_DB_PASSWORD=$MYSQL_PASSWORD
       - WORDPRESS_DB_NAME=wordpress_docker
